@@ -1,0 +1,7 @@
+unique.ID   group.ID
+1_S4_DMSO_chr21.bam DMSO
+2_S5_DMSO_chr21.bam DMSO
+3_S6_DMSO_chr21.bam DMSO
+4_S7_Al-10-49_chr21.bam Al
+5_S8_Al-10-49_chr21.bam Al
+6_S9_Al-10-49_chr21.bam Al

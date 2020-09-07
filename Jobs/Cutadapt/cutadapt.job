@@ -1,0 +1,38 @@
+#! /bin/bash
+#SBATCH -N 1
+#SBATCH -J cutadapt
+#SBATCH -c 2
+#SBATCH -t 1:00:00
+#SBATCH -o OUT/cutadapt-%A_%a.out
+#SBATCH --array=1-6 # job array index 
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=<email>
+########################################
+
+## Cutadapt set-up
+module load cutadapt/1.17
+
+set -x
+#########################
+
+fastq=
+out=
+
+##########################
+
+
+mkdir -p $out
+
+### Cutadapt TruSeq trim
+
+sample=$fastq/${SLURM_ARRAY_TASK_ID}*_1.fastq.gz
+file_base=`basename $sample`
+
+
+cutadapt -m 25 -q 15 \
+   -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+   -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+   -o $out/${file_base%_1.fastq.gz}_1.cutadapt.fastq.gz \
+   -p $out/${file_base%_1.fastq.gz}_2.cutadapt.fastq.gz \
+   $fastq/${file_base} $fastq/${file_base%_1.fastq.gz}_2.fastq.gz 
+

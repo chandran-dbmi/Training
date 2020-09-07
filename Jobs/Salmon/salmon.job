@@ -1,0 +1,41 @@
+#! /bin/bash
+#SBATCH -N 1
+#SBATCH -J SALMON
+#SBATCH -o OUT/salmon-%A_%a.out
+#SBATCH -t 2:00:00
+#SBATCH --array=1-6 # job array index 
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=<email>
+#SBATCH --cpus-per-task=6
+
+
+
+## modules set-up
+module load salmon/0.13.1
+
+
+set -x
+#######################################
+
+
+fastq=
+out=
+
+
+ref=/bgfs/genomics/workshops/2020s/RNASeq_data_analysis/Refs/Homo_sapiens.GRCh38.cdna.all.fa
+transcript_ind=/bgfs/genomics/workshops/2020s/RNASeq_data_analysis/Refs/Salmon_Index
+
+#######################################
+
+mkdir -p $out
+
+filepath=$fastq/${SLURM_ARRAY_TASK_ID}*_1.cutadapt.fastq.gz
+sample=`basename $filepath`
+
+#salmon index -t $ref -i $transcript_ind -k 21 
+
+filebase=${sample%_1.cutadapt.fastq.gz}
+salmon quant -i $transcript_ind -l A -1 $filepath \
+   -2 ${filepath%_1.cutadapt.fastq.gz}_2.cutadapt.fastq.gz \
+    --validateMappings \
+    -o $out/${filebase}.counts

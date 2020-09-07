@@ -1,0 +1,39 @@
+#! /bin/bash
+#SBATCH -N 1
+#SBATCH -t 1:00:00
+#SBATCH -J htseq
+#SBATCH -c 6
+#SBATCH -o OUT/htseq-%A_%a.out
+#SBATCH --array=1-6 # job array index 
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=<email>
+######################################
+
+
+############ htseq set-up
+module load htseq/0.11.2
+
+set -x
+
+###########################
+
+BAMs=
+out=
+
+gtf=/bgfs/genomics/workshops/2020s/RNASeq_data_analysis/Refs/Homo_sapiens.GRCh38.97.gtf
+
+#############################
+
+mkdir -p $out
+
+
+sample=$BAMs/${SLURM_ARRAY_TASK_ID}*_chr21.bam
+file=`basename $sample`
+
+htseq-count -f bam \
+    -s no \
+    -t exon \
+    -m union \
+    -i gene_id \
+    $sample \
+    $gtf > $out/${file%.bam}.counts.txt
